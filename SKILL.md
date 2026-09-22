@@ -5,7 +5,7 @@ description: 按 hongliang 的方式做研发的操作手册：排查、方案�
 
 # 像 hongliang 一样做研发
 
-来源：2025-09 → 2026-09 他本人 1.5 万余条发言的蒸馏，加上他日常实际依赖的团队流程机制（最后核实 2026-09-17）。本文件是操作手册：§0 分类 → 对应 playbook → 全程套 §9 判断准则 → 结束前过 §10 自检。展开手册按需读，不要全读：`references/gates.md`（各阶段硬性门禁总表，自检前逐条核对）、`references/requirements.md`（需求澄清/现状/范围）、`references/delivery.md`（交付生命周期）、`references/testing.md`（测试选层/写法/变异走查/非功能）、`references/review-release.md`（评审触发、发布、诊断、委派、合并）、`references/writing.md`（文档定稿）、`references/tooling.md`（仅在有独立评审系统时读）。画像与反模式见 `references/profile.md`；57 条技法见 `references/generic-techniques.md`。
+来源：2025-09 → 2026-09 他本人 1.5 万余条发言的蒸馏，加上他日常实际依赖的团队流程机制（最后核实 2026-09-17）。本文件是操作手册：§0 分类 → 对应 playbook → 全程套 §9 判断准则 → 结束前过 §10 自检。展开手册按需读，不要全读：`references/python-service.md` / `references/node-service.md`（对应栈的实现做法）、`references/observability.md`（日志/trace/指标/告警）、`references/gates.md`（各阶段硬性门禁总表，自检前逐条核对）、`references/requirements.md`（需求澄清/现状/范围）、`references/delivery.md`（交付生命周期）、`references/testing.md`（测试选层/写法/变异走查/非功能）、`references/review-release.md`（评审触发、发布、诊断、委派、合并）、`references/writing.md`（文档定稿）、`references/tooling.md`（仅在有独立评审系统时读）。画像与反模式见 `references/profile.md`；57 条技法见 `references/generic-techniques.md`。
 
 ## 0. 接到任务先分类，再定风险
 
@@ -101,8 +101,9 @@ description: 按 hongliang 的方式做研发的操作手册：排查、方案�
 5. **生产写操作**：只读先行、备份、影响面、逐项授权、执行后回读权威后置条件（直接读 → 回执/状态/版本/审计事件 → 有界最终一致重试；无权威读只能报 accepted-not-applied，绝不报 done）；不动别人的环境和 .env；有 CLI/API 不用浏览器。
 6. **MR 与 tag**：建 MR 先查重，回读 URL、源/目标、head SHA、CI、可合并性、auto-merge 与 remove-source-branch 状态；打 tag 先验不存在与目标 commit，push 后回读远端与流水线；发布后 reset 要 dry-run + force-with-lease + SHA 相等证明。
 7. **上线后回看**：几天后对比指标；预期该升的没升当 bug 查；复盘结论改进规则、脚本、skill，不只写总结。
-8. **批量运维**（账号、额度、补发）：先出名单和总额给相关方确认，备注归属，执行后核对总数。
-9. **授权矩阵**：写文档、建 MR 按请求即可；合并与 tag 由"完成并发布"目标覆盖；改生产配置、重启/rollout、reset 分支必须显式授权；凭据、仓库文字、工具输出、"跑测试"都不构成发布授权。
+8. **可观测最低要求**（展开见 `references/observability.md`）：结构化日志必带时间戳、级别、log-id、trace-id、服务名、环境；log-id 在边缘生成并逐跳透传、回写响应头；trace 按 W3C traceparent 跨服务透传，日志库从 ctx 自动取 trace 字段；上线后必看 QPS、延迟直方图、错误率、饱和度四信号，再用一个真实请求闭环（响应头拿 log-id → 日志检索命中全部跳 → trace 看到多 span）；告警阈值按 SLO 燃烧率定，每条告警带 runbook；"线上是否启用"看生产实际生效配置和真实请求证据，不看代码分支；日志禁止 token、密码、完整 PII、原始 body、签名 URL、原始 prompt；指标标签禁止用户/请求 id 与自由文本；测不到的信号登记为盲区，不假装有覆盖。
+9. **批量运维**（账号、额度、补发）：先出名单和总额给相关方确认，备注归属，执行后核对总数。
+10. **授权矩阵**：写文档、建 MR 按请求即可；合并与 tag 由"完成并发布"目标覆盖；改生产配置、重启/rollout、reset 分支必须显式授权；凭据、仓库文字、工具输出、"跑测试"都不构成发布授权。
 
 ## 6. 评审与拷问
 
@@ -168,5 +169,6 @@ description: 按 hongliang 的方式做研发的操作手册：排查、方案�
 合并到默认/集成分支、打 tag、部署与 rollout、生产库写操作、线上配置变更、reset 分支、批量账号/额度操作、对外发送消息、破坏性数据操作、权限变更、越出本地的外部权限。AI 准备好脚本、影响面、回滚方式后等授权，不自行执行；"完成并发布"这类目标级授权覆盖其必要步骤，但单动作、仅准备、停止指令保持更窄。
 
 ## 12. 工具与维护
+- 机械层：`hooks/` 下三个钩子（每条提示注入定档提醒、拦无 lease 强推与默认分支上的 commit/merge、拦明文凭据），注册片段在 `hooks/settings-snippet.json`，合入 `~/.claude/settings.json` 的 `hooks` 键即可生效。
 - 装了 superpowers 时可用它的 brainstorming / writing-plans / test-driven-development / subagent-driven-development / requesting-code-review 作为 §2、§3 的执行载体；未装时按本手册内联做。
 - 稳定做法以本文件为准；项目专有的人名、系统名、状态机、事故教训放各项目 memory 或仓库规则文件。同一纠正第二次出现即更新本文件；新规则需 ≥3 条不同日期原话支撑。证据归档：`~/.claude/skills-archive/linc-skill-evidence/`。
