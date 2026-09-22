@@ -1,0 +1,11 @@
+{
+  "name": "linc-skill",
+  "owner": { "name": "hllinc" },
+  "plugins": [
+    {
+      "name": "linc-skill",
+      "source": { "source": "url", "url": "https://github.com/hllinc/linc-skill.git" },
+      "description": "研发操作手册 + 三个护栏钩子"
+    }
+  ]
+}

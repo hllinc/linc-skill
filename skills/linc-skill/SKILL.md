@@ -169,6 +169,6 @@ description: 按 linc 的方式做研发的操作手册：排查、方案、实�
 合并到默认/集成分支、打 tag、部署与 rollout、生产库写操作、线上配置变更、reset 分支、批量账号/额度操作、对外发送消息、破坏性数据操作、权限变更、越出本地的外部权限。AI 准备好脚本、影响面、回滚方式后等授权，不自行执行；"完成并发布"这类目标级授权覆盖其必要步骤，但单动作、仅准备、停止指令保持更窄。
 
 ## 12. 工具与维护
-- 机械层：`hooks/` 下三个钩子（每条提示注入定档提醒、拦无 lease 强推与默认分支上的 commit/merge、拦明文凭据），注册片段在 `hooks/settings-snippet.json`，合入 `~/.claude/settings.json` 的 `hooks` 键即可生效。
+- 机械层：仓库根目录 `hooks/` 下三个钩子（每条提示注入定档提醒、拦无 lease 强推与默认分支上的 commit/merge、拦明文凭据）。以插件方式安装时随插件自动注册；以 clone 方式安装时把 `hooks/settings-snippet.json` 合入 `~/.claude/settings.json`。
 - 装了 superpowers 时可用它的 brainstorming / writing-plans / test-driven-development / subagent-driven-development / requesting-code-review 作为 §2、§3 的执行载体；未装时按本手册内联做。
 - 稳定做法以本文件为准；项目专有的人名、系统名、状态机、事故教训放各项目 memory 或仓库规则文件。同一纠正第二次出现即更新本文件；新规则需 ≥3 条不同日期原话支撑。证据归档：`~/.claude/skills-archive/linc-skill-evidence/`。
