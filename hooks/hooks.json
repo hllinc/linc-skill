@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/linc-remind.sh\"", "timeout": 5 } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/linc-git-guard.sh\"", "timeout": 10, "statusMessage": "linc-skill git guard" } ] },
+      { "matcher": "Bash|Write|Edit", "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/linc-secret-guard.sh\"", "timeout": 10, "statusMessage": "linc-skill secret guard" } ] }
+    ]
+  }
+}

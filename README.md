@@ -5,8 +5,10 @@
 ## 目录
 
 ```
-SKILL.md                     入口：任务分类、风险三档最小路径、8 个 playbook、判断准则、完成自检、授权边界
-references/
+.claude-plugin/              插件清单与自带 marketplace 清单（Claude Code 插件安装用）
+skills/linc-skill/
+  SKILL.md                   入口：任务分类、风险三档最小路径、8 个 playbook、判断准则、完成自检、授权边界
+  references/
   gates.md                   各阶段硬性门禁总表（自检前逐条核对）
   requirements.md            需求澄清 / 现状盘点 / 范围界定
   delivery.md                交付生命周期：阶段门、测试先行、设计门、收尾标签、状态同步、下线级联
@@ -20,6 +22,7 @@ references/
   profile.md                 工作画像、决策风格、反模式
   generic-techniques.md      57 条可迁移技法
 hooks/
+  hooks.json                 插件方式安装时自动注册的钩子清单
   linc-remind.sh             每条提示注入"先分类定档"提醒
   linc-git-guard.sh          拦无 lease 强推、删 release 分支；默认分支上 commit/merge 改为询问
   linc-secret-guard.sh       命令或写入内容含明文凭据时拒绝
@@ -30,25 +33,28 @@ hooks/
 
 依赖：git；钩子另需 bash 与 jq。
 
-**Claude Code**（自动发现 `~/.claude/skills/*/SKILL.md`）
+**Claude Code（推荐，插件方式，自动更新，钩子自动注册）**
 
-```bash
-git clone https://github.com/hllinc/linc-skill ~/.claude/skills/linc-skill
+会话里依次执行：
+
+```
+/plugin marketplace add hllinc/linc-skill
+/plugin install linc-skill@linc-skill
 ```
 
-**Cursor**（自动发现 `~/.cursor/skills/*/SKILL.md`）
+之后每次启动 Claude Code 会自动拉取新版本。私有仓库需要本机已有可访问该仓库的 git 凭据（`gh auth login` 或 SSH）。
+
+**Cursor / Codex（clone 方式）**
+
+两者自动发现各自 `skills/*/SKILL.md`，把本仓库里的 `skills/linc-skill` 目录放到该位置即可：
 
 ```bash
-git clone https://github.com/hllinc/linc-skill ~/.cursor/skills/linc-skill
+git clone https://github.com/hllinc/linc-skill ~/linc-skill
+ln -s ~/linc-skill/skills/linc-skill ~/.cursor/skills/linc-skill
+ln -s ~/linc-skill/skills/linc-skill ~/.codex/skills/linc-skill
 ```
 
-**Codex**（自动发现 `~/.codex/skills/*/SKILL.md`）
-
-```bash
-git clone https://github.com/hllinc/linc-skill ~/.codex/skills/linc-skill
-```
-
-多个宿主共用一份：clone 一次，其余位置用软链接指过去。
+更新时在 `~/linc-skill` 里 `git pull`，软链接指向的内容随之更新。Claude Code 也可以用同样的 clone 方式（软链到 `~/.claude/skills/linc-skill`），但那样不自动更新，钩子要手动注册。
 
 ## 使用
 
@@ -60,7 +66,7 @@ git clone https://github.com/hllinc/linc-skill ~/.codex/skills/linc-skill
 
 ## 钩子（可选，仅 Claude Code）
 
-三个钩子把手册里最容易被忘记的三条规则变成机械拦截。注册方法：把 `hooks/settings-snippet.json` 里的 `hooks` 对象合进 `~/.claude/settings.json`（已有 `hooks` 键时合并数组，不要覆盖），或在会话里打开 `/hooks` 逐个添加。脚本路径用 `$HOME/.claude/skills/linc-skill/hooks/...`，clone 到别处要相应改。
+三个钩子把手册里最容易被忘记的三条规则变成机械拦截。插件方式安装时它们随插件自动注册，无需配置。clone 方式安装时把 `hooks/settings-snippet.json` 里的 `hooks` 对象合进 `~/.claude/settings.json`（已有 `hooks` 键时合并数组，不要覆盖），或在会话里打开 `/hooks` 逐个添加；片段里的脚本路径按你的 clone 位置改。
 
 验证是否生效：注册后在会话里让 agent 执行 `git push -f origin main`，应被拒绝并给出理由；执行含 `${VAR}` 引用的命令应正常放行。
 
@@ -68,11 +74,7 @@ git clone https://github.com/hllinc/linc-skill ~/.codex/skills/linc-skill
 
 ## 更新
 
-```bash
-cd ~/.claude/skills/linc-skill && git pull
-```
-
-技能文件是纯文本，拉取后新会话即生效；钩子脚本改动同样即时生效。
+插件方式：自动，每次启动 Claude Code 时拉取；也可在会话里 `/plugin update linc-skill@linc-skill`。clone 方式：在 clone 目录 `git pull`，新会话即生效。
 
 ## 维护约定
 
