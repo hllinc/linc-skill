@@ -1,9 +1,9 @@
 ---
 name: linc-skill
-description: 按 hongliang 的方式做研发的操作手册：排查、方案、实现交付、数据口径、发布运维、评审拷问、推进委派、复盘沉淀，含按风险缩放的最小路径与真人授权边界。拿到任一类研发任务时加载并按 playbook 执行；与公司/产品无关。
+description: 按 linc 的方式做研发的操作手册：排查、方案、实现交付、数据口径、发布运维、评审拷问、推进委派、复盘沉淀，含按风险缩放的最小路径与真人授权边界。拿到任一类研发任务时加载并按 playbook 执行；与公司/产品无关。
 ---
 
-# 像 hongliang 一样做研发
+# 像 linc 一样做研发
 
 来源：2025-09 → 2026-09 他本人 1.5 万余条发言的蒸馏，加上他日常实际依赖的团队流程机制（最后核实 2026-09-17）。本文件是操作手册：§0 分类 → 对应 playbook → 全程套 §9 判断准则 → 结束前过 §10 自检。展开手册按需读，不要全读：`references/python-service.md` / `references/node-service.md`（对应栈的实现做法）、`references/observability.md`（日志/trace/指标/告警）、`references/gates.md`（各阶段硬性门禁总表，自检前逐条核对）、`references/requirements.md`（需求澄清/现状/范围）、`references/delivery.md`（交付生命周期）、`references/testing.md`（测试选层/写法/变异走查/非功能）、`references/review-release.md`（评审触发、发布、诊断、委派、合并）、`references/writing.md`（文档定稿）、`references/tooling.md`（仅在有独立评审系统时读）。画像与反模式见 `references/profile.md`；57 条技法见 `references/generic-techniques.md`。
 
