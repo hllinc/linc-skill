@@ -21,6 +21,11 @@ skills/linc-skill/
   tooling.md                 独立评审系统的接线细节（只在有该系统时读）
   profile.md                 工作画像、决策风格、反模式
   generic-techniques.md      57 条可迁移技法
+  agent-runtime.md           LLM Agent 运行时设计：工具双通道、prompt cache、流式会话、沙箱令牌、灰度、协议兼容
+  billing-system.md          计费与商业化：账本、幂等、订阅权益、促销、支付迁移、防刷、对账、上线 runbook
+  data-metrics.md            数据看板与口径治理：真相源、校验、时区、重算、假数据、看板评审清单
+  ci-review-bot.md           CI 里的 AI 代码评审机器人：架构、结果判定、运维、多仓推广、故障清单
+  release-multi-env.md       多环境发版：分支/环境模型、hotfix 与 back-merge、多仓顺序、配置重启、任务状态机、CLI 原则
 hooks/
   hooks.json                 插件方式安装时自动注册的钩子清单
   linc-remind.sh             每条提示注入"先分类定档"提醒

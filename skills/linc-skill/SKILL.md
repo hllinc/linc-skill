@@ -5,7 +5,7 @@ description: 按 linc 的方式做研发的操作手册：排查、方案、实�
 
 # 像 linc 一样做研发
 
-来源：2025-09 → 2026-09 他本人 1.5 万余条发言的蒸馏，加上他日常实际依赖的团队流程机制（最后核实 2026-09-17）。本文件是操作手册：§0 分类 → 对应 playbook → 全程套 §9 判断准则 → 结束前过 §10 自检。展开手册按需读，不要全读：`references/python-service.md` / `references/node-service.md`（对应栈的实现做法）、`references/observability.md`（日志/trace/指标/告警）、`references/gates.md`（各阶段硬性门禁总表，自检前逐条核对）、`references/requirements.md`（需求澄清/现状/范围）、`references/delivery.md`（交付生命周期）、`references/testing.md`（测试选层/写法/变异走查/非功能）、`references/review-release.md`（评审触发、发布、诊断、委派、合并）、`references/writing.md`（文档定稿）、`references/tooling.md`（仅在有独立评审系统时读）。画像与反模式见 `references/profile.md`；57 条技法见 `references/generic-techniques.md`。
+来源：2025-09 → 2026-09 他本人 1.5 万余条发言的蒸馏，加上他日常实际依赖的团队流程机制（最后核实 2026-09-17）。本文件是操作手册：§0 分类 → 对应 playbook → 全程套 §9 判断准则 → 结束前过 §10 自检。展开手册按需读，不要全读：`references/python-service.md` / `references/node-service.md`（对应栈的实现做法）、`references/observability.md`（日志/trace/指标/告警）、`references/gates.md`（各阶段硬性门禁总表，自检前逐条核对）、`references/requirements.md`（需求澄清/现状/范围）、`references/delivery.md`（交付生命周期）、`references/testing.md`（测试选层/写法/变异走查/非功能）、`references/review-release.md`（评审触发、发布、诊断、委派、合并）、`references/writing.md`（文档定稿）、`references/tooling.md`（仅在有独立评审系统时读）。画像与反模式见 `references/profile.md`；57 条技法见 `references/generic-techniques.md`。领域手册只在任务落在该领域时读：`references/agent-runtime.md`（LLM Agent 运行时：工具双通道、prompt cache、会话流式、沙箱令牌、灰度策略、协议兼容）、`references/billing-system.md`（计费/订阅/促销/幂等/防刷/对账）、`references/data-metrics.md`（看板口径、真相源、校验、时区、重算、假数据）、`references/ci-review-bot.md`（CI 里的 AI 评审机器人建设与运维）、`references/release-multi-env.md`（多环境发版、hotfix/back-merge、多仓顺序、配置重启、任务状态机、CLI 原则）。
 
 ## 0. 接到任务先分类，再定风险
 
@@ -84,7 +84,7 @@ description: 按 linc 的方式做研发的操作手册：排查、方案、实�
 9. **合并后**：流转工作项到"测试中"（不是完成），评论写进度、决策、验证结果；已集成的临时分支与 worktree 清理（remove 不带 force、branch -d、含 release 的分支绝不自动删）；跑收尾续接：有清晰归属、可验证、低风险的下一切片就继续，停下必须说明具体原因。
 10. **收尾三件事**：删调试日志、删废弃代码与配置、运维说明随交付（配置清单、脚本用法写在脚本头）。唯一合法收尾标签：complete（验证与独立评审齐全）/ pre-runtime-test-ready（代码、低层测试、构建齐全，但缺运行时证据或缺独立评审）/ blocked（补救后仍缺阻塞层证据）；无本轮新鲜验证证据不得声称完成。
 
-## 4. 数据
+## 4. 数据（展开见 `references/data-metrics.md`）
 
 1. **口径先写清再取数。** 每个指标写定义、来源表、字段、条件、时区、cohort 归属；与产品对齐后作为标准；与已校准的基准看板对得上。
 2. **取数纪律。** 一手源优先；不抽样、不限条数、不占位、不假数据；失败显示失败不显示 0；时区统一；缓存要真生效并能证明；查询证据按基数报告（0/1/N 分别说清，0 条也是证据）。
@@ -92,7 +92,7 @@ description: 按 linc 的方式做研发的操作手册：排查、方案、实�
 4. **校验通过打标签**作为可信基准；埋点以一张真相源表格管理，新增/修改/废弃都以它为准。
 5. **数据结论要说明数据边界**（时间窗、时区、口径版本），给运营/产品的结论一句话可转发。
 
-## 5. 发布与运维（展开见 `references/review-release.md` 发布节）
+## 5. 发布与运维（展开见 `references/review-release.md` 发布节；多环境发版与任务流转见 `references/release-multi-env.md`）
 
 1. **固定发版输入**：声明范围、生产目标、发布源、tag 规则、文档产物、环境、用户已做决定；用一手 `base...head` diff/log 对照意图，范围不符或有未记录的运维差异先阻断。
 2. **上线前清单**：新增配置项各环境配了没、默认值是什么；多仓部署顺序；需执行的脚本/索引在哪一步；回滚方式；发布文档按已确认范围写好再进合并授权；从已确认 diff 派生提测范围。
